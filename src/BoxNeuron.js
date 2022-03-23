@@ -36,18 +36,62 @@ function BoxNeuron() {
   );
 
   const changeForm1 = (name, value) => {
-    setEstadoPrimerForm({ ...estadoPrimerForm, [name]: value });
+    let newestado = { ...estadoPrimerForm };
+    switch (name) {
+      case 'weight0':
+        newestado.weights[0] = value;
+        break;
+      case 'weight1':
+        newestado.weights[1] = value;
+        break;
+      case 'weight2':
+        newestado.weights[2] = value;
+        break;
+      case 'weight3':
+        newestado.weights[3] = value;
+        break;
+      case "error":
+        newestado.error = value;
+        break;
+      case "learning_factor":
+        newestado.learning_factor = value;
+        break;
+    }
+    setEstadoPrimerForm(newestado);
   };
 
   const changeForm2 = (name, value) => {
-    setEstadoSegundoForm({ ...estadoSegundoForm, [name]: value });
+    let newestado2 = { ...estadoSegundoForm };
+    debugger
+    switch (name) {
+      case 'x1':
+        newestado2.array_x[0] = value;
+        break;
+      case 'x2':
+        newestado2.array_x[1] = value;
+        break;
+      case 'x3':
+        newestado2.array_x[2] = value;
+        break;
+      case 'x4':
+        newestado2.array_x[3] = value;
+        break;
+      case "error":
+        newestado2.error = value;
+        break;
+      case "counterAdjust":
+        newestado2.counterAdjust = value;
+        break;
+    }
+    setEstadoSegundoForm(newestado2);
   };
 
-  const changeResultCalculate = (name, value) => {
-    setEstadoSegundoForm({ ...resultadoCalculo, [name]: value });
-  };
 
   const validarData = () => {
+    estadoPrimerForm.weights[0] = isNaN(estadoPrimerForm.weights[0]) ? 0 : Number(estadoPrimerForm.weights[0])
+    estadoPrimerForm.weights[1] = isNaN(estadoPrimerForm.weights[1]) ? 0 : Number(estadoPrimerForm.weights[1])
+    estadoPrimerForm.weights[2] = isNaN(estadoPrimerForm.weights[2]) ? 0 : Number(estadoPrimerForm.weights[2])
+    estadoPrimerForm.weights[3] = isNaN(estadoPrimerForm.weights[3]) ? 0 : Number(estadoPrimerForm.weights[3])
     axios
       .post(urlCalcular, {
         error:
@@ -56,29 +100,31 @@ function BoxNeuron() {
           estadoPrimerForm.learning_factor === ""
             ? 0
             : Number(estadoPrimerForm.learning_factor),
-        weights: Number(estadoInicialPrimerFormulario.weights),
+        weights: estadoPrimerForm.weights,
       })
       .then((respuesta) => {
         setEstadoSegundoForm({
+      
           weights: respuesta.data.weights,
           counterAdjust: respuesta.data.counterAdjust,
           error: respuesta.data.error,
-          array_x: respuesta.data.array_x,
+          array_x:  [0, 0, 0, 0],
         });
       });
   };
 
   const calculeteData = () => {
+    console.log("estado 2222", estadoSegundoForm)
+
+    estadoSegundoForm.array_x[0] = isNaN(estadoSegundoForm.array_x[0]) ? 0 : Number(estadoSegundoForm.array_x[0])
+    estadoSegundoForm.array_x[1] = isNaN(estadoSegundoForm.array_x[1]) ? 0 : Number(estadoSegundoForm.array_x[1])
+    estadoSegundoForm.array_x[2] = isNaN(estadoSegundoForm.array_x[2]) ? 0 : Number(estadoSegundoForm.array_x[2])
+    estadoSegundoForm.array_x[3] = isNaN(estadoSegundoForm.array_x[3]) ? 0 : Number(estadoSegundoForm.array_x[3])
+
     axios
       .post(urlValidar, {
-        weights:
-          estadoSegundoForm.weights === ""
-            ? 0
-            : Number(estadoSegundoForm.weights),
-        array_x:
-          estadoSegundoForm.array_x === ""
-            ? 0
-            : Number(estadoSegundoForm.array_x),
+        weights: estadoSegundoForm.weights,
+        array_x: estadoSegundoForm.array_x,
         counterAdjust:
           estadoSegundoForm.counterAdjust === ""
             ? 0
@@ -126,34 +172,39 @@ function BoxNeuron() {
           label="Factor de Aprendizaje"
         />
         <TextField
+
           value={estadoPrimerForm.weights[0]}
           onChange={(v) => {
-            changeForm1("weight1", v.target.value);
+            changeForm1("weight0", v.target.value);
           }}
           required
+          type='number'
           label="Peso Uno"
         />
         <TextField
           value={estadoPrimerForm.weights[1]}
           onChange={(v) => {
-            changeForm1("weight2", v.target.value);
+            changeForm1("weight1", v.target.value);
           }}
           required
+          type='number'
           label="Peso Dos"
         />
         <TextField
           value={estadoPrimerForm.weights[2]}
           onChange={(v) => {
-            changeForm1("weight3", v.target.value);
+            changeForm1("weight2", v.target.value);
           }}
+          type='number'
           required
           label="Peso Tres"
         />
         <TextField
           value={estadoPrimerForm.weights[3]}
           onChange={(v) => {
-            changeForm1("weight4", v.target.value);
+            changeForm1("weight3", v.target.value);
           }}
+          type='number'
           required
           label="Peso Cuatro"
         />
@@ -189,15 +240,35 @@ function BoxNeuron() {
         <TextField value={estadoSegundoForm.error} label="Error" disabled />
         <TextField
           onChange={(v) => {
-            changeForm2("weights", v.target.value);
+            changeForm2("x1", v.target.value);
           }}
+          type='number'
+          required
           label="x1"
         />
         <TextField
           onChange={(v) => {
             changeForm2("x2", v.target.value);
           }}
+          type='number'
+          required
           label="x2"
+        />
+        <TextField
+          onChange={(v) => {
+            changeForm2("x3", v.target.value);
+          }}
+          type='number'
+          required
+          label="x3"
+        />
+        <TextField
+          onChange={(v) => {
+            changeForm2("x4", v.target.value);
+          }}
+          label="x4"
+          type='number'
+          required
         />
         <Button style={{ marginRight: "10px" }} onClick={calculeteData}>
           CALCULAR
